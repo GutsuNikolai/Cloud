@@ -144,17 +144,30 @@ sudo systemctl enable php-fpm && sudo systemctl start php-fpm
 Проверка сервиса Nginx: `systemctl status nginx` (active).
 ![Nginx_up.png](screenshots/nginx_up.png)
 
-Конфигурация Nginx `mywebsite.conf` для PHP сделана по примеру из курса с созданием бэкапа, с отличием в:
+Конфигурация Nginx `mywebsite.conf` для PHP сделана по примеру из курса с созданием бэкапа:
 
 ```bash
-    location ~ \.php$ {
-            include fastcgi.conf;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            fastcgi_pass unix:/run/php-fpm/www.sock;
-        }
-```
+    server {
+  listen 80;
+  server_name _;
 
-> В Amazon Linux 2023 нет `snippets/fastcgi-php.conf`, поэтому использовал `fastcgi.conf`.
+  root /usr/share/nginx/html;
+  index index.php index.html index.htm;
+
+  location / {
+      try_files $uri $uri/ =404;
+  }
+
+  location ~ \.php$ {
+      include snippets/fastcgi-php.conf;
+      fastcgi_pass unix:/run/php-fpm/www.sock;
+  }
+
+  location ~ /\.ht {
+      deny all;
+  }
+}
+```
 
 После чего файл конфигурации был загруже на сервер в директорию `/etc/nginx/conf.d/` командами:
 
@@ -202,3 +215,14 @@ Terminate — полностью удаляет инстанс: диск и вс
 Кроме того, работа включала знакомство с механизмами логирования и мониторинга AWS, а также применение **AWS CloudShell (CLI)** для управления виртуальной машиной с помощью командной строки. В частности, была выполнена остановка инстанса через CLI с сохранением данных и конфигурации.
 
 Таким образом, цель лабораторной работы достигнута: были изучены основы вычислительных сервисов AWS, принципы настройки EC2 и развертывания веб-приложений в облачной среде. Полученные навыки могут быть использованы для дальнейших работ, связанных с автоматизацией, DevOps-практиками и управлением веб-инфраструктурой.
+
+## Список использованных источников
+
+1. [Официальная документация AWS](https://docs.aws.amazon.com/) — материалы по настройке сервисов EC2, IAM и работе с AWS CLI.  
+2. [Amazon Linux 2023 Documentation](https://docs.aws.amazon.com/linux/al2023/) — руководство по установке и настройке пакетов в Amazon Linux.  
+3. [Nginx Official Documentation](https://nginx.org/en/docs/) — справка по настройке веб-сервера и обработке PHP через FastCGI.  
+4. [Chat GPT](https://chatgpt.com) - Консультация и помощь в решении проблем, появившихся в ходе выполнения работы
+
+## Дополнительные аспекты
+
+> В Amazon Linux 2023 нет `snippets/fastcgi-php.conf`, поэтому использовал `fastcgi.conf` в конфигурационном файле.
