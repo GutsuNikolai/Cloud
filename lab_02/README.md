@@ -156,7 +156,7 @@ sudo systemctl enable php-fpm && sudo systemctl start php-fpm
 
 > В Amazon Linux 2023 нет `snippets/fastcgi-php.conf`, поэтому использовал `fastcgi.conf`.
 
-После чего файл конфигурации был загруже на сервер  в директорию `/etc/nginx/conf.d/` командами:
+После чего файл конфигурации был загруже на сервер в директорию `/etc/nginx/conf.d/` командами:
 
 ```bash
 scp -i yournickname-keypair.pem mywebsite.conf ec2-user@<Public-IP>:/tmp
